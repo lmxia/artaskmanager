@@ -1,6 +1,6 @@
 import asyncio
 import tornado.web
-
+from tornado.ioloop import IOLoop
 from handler import handler
 from metashape.algm import ModelBuilder3D
 
@@ -27,8 +27,7 @@ def make_app():
 async def main():
     app = make_app()
     app.listen(8888)
-    ioloop = tornado.ioloop.IOLoop.current()
-    ioloop.spawn_callback(ModelBuilder3D.builder)
+    IOLoop.current().spawn_callback(ModelBuilder3D.builder)
     shutdown_event = asyncio.Event()
     await shutdown_event.wait()
 
