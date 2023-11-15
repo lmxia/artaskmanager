@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import Metashape
 import errno
 import shutil
@@ -11,7 +12,6 @@ import os
 
 
 class ModelBuilder3D:
-
     bucket = "facescan"
     obsClient = ObsClient(
         access_key_id='NCZPQASHJNW2URNGB9SI',
@@ -26,10 +26,12 @@ class ModelBuilder3D:
     async def builder(cls):
         while True:
             # 这里会阻塞的。
+            logging.info("prepare to get a new video")
             _, video_name = await task_queue.get()
+            logging.info("now get a a new video" + video_name)
             object_metadata = cls.obsClient.getObjectMetadata(cls.bucket, video_name)
             if object_metadata.status > 300:
-                print("no video file found in your request...")
+                logging.info("no video file found in your request...")
                 continue
             video_resp = cls.obsClient.createSignedUrl('GET', cls.bucket, video_name, expires=3600)
             cap = cv2.VideoCapture(video_resp.signedUrl)
@@ -38,12 +40,13 @@ class ModelBuilder3D:
                 continue
             try:
                 tmp_dir = tempfile.mkdtemp()  # create dir
+                logging.info("now we work in a temp dir" + tmp_dir)
                 for count in range(30):  # 计数，从第0帧开始
                     cap.set(cv2.CAP_PROP_POS_FRAMES, int(count * num_frame / 30))
                     success, frame = cap.read()
                     if not success:
-                       print("read failed with file")
-                       continue
+                        logging.error("read failed with file")
+                        continue
                     cv2.imwrite(tmp_dir + count + '.png', frame)
                 # 指定图片路径
                 path = tmp_dir
@@ -78,8 +81,8 @@ class ModelBuilder3D:
                     chunk.exportModel(path + '/model.obj')
                 resp = cls.obsClient.putFile(cls.bucket, "model.obj", path + '/model.obj')
                 if resp.status >= 300:
-                    print("failed..")
-                print("Finished!")
+                    logging.error("failed..")
+                logging.info("Finished!")
 
             finally:
                 try:
@@ -87,9 +90,3 @@ class ModelBuilder3D:
                 except OSError as exc:
                     if exc.errno != errno.ENOENT:  # ENOENT - no such file or directory
                         raise
-
-
-
-
-
-
