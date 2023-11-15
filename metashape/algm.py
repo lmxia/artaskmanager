@@ -5,7 +5,7 @@ import errno
 import shutil
 import tempfile
 
-from sharement.sharedata import task_queue
+from sharement.sharedata import task_queue_dict
 from obs import ObsClient, Object
 import cv2
 import os
@@ -27,7 +27,9 @@ class ModelBuilder3D:
         while True:
             # 这里会阻塞的。
             logging.info("prepare to get a new video")
-            _, video_name = await task_queue.get()
+            if "normal" not in task_queue_dict:
+                task_queue_dict["normal"] = asyncio.PriorityQueue()
+            _, video_name = await task_queue_dict["normal"].get()
             logging.info("now get a a new video" + video_name)
             object_metadata = cls.obsClient.getObjectMetadata(cls.bucket, video_name)
             if object_metadata.status > 300:
