@@ -23,14 +23,10 @@ class ModelBuilder3D:
         pass
 
     @classmethod
-    async def next_pic_key(cls):
-        return await task_queue.get()
-
-    @classmethod
-    def builder(cls):
+    async def builder(cls):
         while True:
             # 这里会阻塞的。
-            _, video_name = await cls.next_pic_key()
+            _, video_name = await task_queue.get()
             object_metadata = cls.obsClient.getObjectMetadata(cls.bucket, video_name)
             if object_metadata.status > 300:
                 print("no video file found in your request...")
