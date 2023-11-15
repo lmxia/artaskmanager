@@ -51,7 +51,7 @@ class ModelBuilder3D:
                         continue
                     cv2.imwrite(tmp_dir + "/" + str(count) + '.png', frame)
                 # 指定图片路径
-                path = tmp_dir
+                path = tmp_dir + "/"
 
                 # 创建Metashape文档对象
                 doc = Metashape.Document()
