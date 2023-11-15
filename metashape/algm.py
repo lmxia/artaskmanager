@@ -47,7 +47,7 @@ class ModelBuilder3D:
                     if not success:
                         logging.error("read failed with file")
                         continue
-                    cv2.imwrite(tmp_dir + count + '.png', frame)
+                    cv2.imwrite(tmp_dir + "/" + str(count) + '.png', frame)
                 # 指定图片路径
                 path = tmp_dir
 

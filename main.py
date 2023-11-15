@@ -31,6 +31,7 @@ async def main():
     app = make_app()
     app.listen(8888)
     shutdown_event = asyncio.Event()
+    IOLoop.current().spawn_callback(ModelBuilder3D.builder)
     await shutdown_event.wait()
 
 
@@ -44,5 +45,4 @@ if __name__ == '__main__':
                         '%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'
                         )
     enable_pretty_logging()
-    IOLoop.current().spawn_callback(ModelBuilder3D.builder)
     asyncio.run(main())
