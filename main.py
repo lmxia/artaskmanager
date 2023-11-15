@@ -18,7 +18,7 @@ def make_app():
     return tornado.web.Application(
         [
             (r"/", MainHandler),
-            (r"/enqueue)", handler.InQueueHandler),
+            (r"/enqueue", handler.InQueueHandler),
         ],
         **settings
     )
