@@ -18,7 +18,7 @@ def make_app():
     return tornado.web.Application(
         [
             (r"/", MainHandler),
-            (r"/enqueue/(?P<id>[0-9]+)", handler.InQueueHandler),
+            (r"/enqueue)", handler.InQueueHandler),
         ],
         **settings
     )
@@ -27,11 +27,11 @@ def make_app():
 async def main():
     app = make_app()
     app.listen(8888)
-    IOLoop.current().spawn_callback(ModelBuilder3D.builder)
     shutdown_event = asyncio.Event()
     await shutdown_event.wait()
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    IOLoop.current().spawn_callback(ModelBuilder3D.builder)
     asyncio.run(main())

@@ -14,7 +14,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class InQueueHandler(BaseHandler):
 
-    async def post(self, user_id):
+    async def post(self):
         post_data = self.request.body
         if post_data:
             post_data = self.request.body.decode('utf-8')
