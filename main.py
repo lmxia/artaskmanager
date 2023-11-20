@@ -29,7 +29,7 @@ def make_app():
 
 async def main():
     app = make_app()
-    app.listen(8888)
+    app.listen(80)
     shutdown_event = asyncio.Event()
     IOLoop.current().spawn_callback(ModelBuilder3D.builder)
     await shutdown_event.wait()

@@ -29,20 +29,21 @@ class ModelBuilder3D:
             logging.info("prepare to get a new video")
             if "normal" not in task_queue_dict:
                 task_queue_dict["normal"] = asyncio.PriorityQueue()
-            _, video_name = await task_queue_dict["normal"].get()
-            logging.info("now get a a new video" + video_name)
-            object_metadata = cls.obsClient.getObjectMetadata(cls.bucket, video_name)
+            _, video_fullpath_name = await task_queue_dict["normal"].get()
+            logging.info("now get a a new video" + video_fullpath_name)
+            (s3_path, filename) = os.path.split(video_fullpath_name)
+            object_metadata = cls.obsClient.getObjectMetadata(cls.bucket, video_fullpath_name)
             if object_metadata.status > 300:
                 logging.info("no video file found in your request...")
                 continue
-            video_resp = cls.obsClient.createSignedUrl('GET', cls.bucket, video_name, expires=3600)
+            video_resp = cls.obsClient.createSignedUrl('GET', cls.bucket, video_fullpath_name, expires=3600)
             cap = cv2.VideoCapture(video_resp.signedUrl)
             num_frame = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             if num_frame < 30:
                 continue
             try:
                 tmp_dir = tempfile.mkdtemp()  # create dir
-                logging.info("now we work in a temp dir" + tmp_dir)
+                logging.info("now we work in a temp dir " + tmp_dir)
                 for count in range(30):  # 计数，从第0帧开始
                     cap.set(cv2.CAP_PROP_POS_FRAMES, int(count * num_frame / 30))
                     success, frame = cap.read()
@@ -81,7 +82,7 @@ class ModelBuilder3D:
                 # 导出obj模型
                 if chunk.model:
                     chunk.exportModel(path + '/model.obj')
-                resp = cls.obsClient.putFile(cls.bucket, "model.obj", path + '/model.obj')
+                resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.obj", path + '/model.obj')
                 if resp.status >= 300:
                     logging.error("failed..")
                 logging.info("Finished!")
