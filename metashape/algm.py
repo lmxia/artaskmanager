@@ -85,10 +85,10 @@ class ModelBuilder3D:
                 resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.obj", path + '/model.obj')
                 if resp.status >= 300:
                     logging.error("obj file upload failed..")
-                resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.obj", path + '/model.jpg')
+                resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.jpg", path + '/model.jpg')
                 if resp.status >= 300:
                     logging.error("jpg file upload failed..")
-                resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.obj", path + '/model.mtl')
+                resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.mtl", path + '/model.mtl')
                 if resp.status >= 300:
                     logging.error("mtl file upload failed..")
                 logging.info("Finished!")
