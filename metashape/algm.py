@@ -30,7 +30,7 @@ class ModelBuilder3D:
             if "normal" not in task_queue_dict:
                 task_queue_dict["normal"] = asyncio.PriorityQueue()
             _, video_fullpath_name = await task_queue_dict["normal"].get()
-            logging.info("now get a a new video" + video_fullpath_name)
+            logging.info("now get a a new video: " + video_fullpath_name)
             (s3_path, filename) = os.path.split(video_fullpath_name)
             object_metadata = cls.obsClient.getObjectMetadata(cls.bucket, video_fullpath_name)
             if object_metadata.status > 300:
@@ -84,7 +84,13 @@ class ModelBuilder3D:
                     chunk.exportModel(path + '/model.obj')
                 resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.obj", path + '/model.obj')
                 if resp.status >= 300:
-                    logging.error("failed..")
+                    logging.error("obj file upload failed..")
+                resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.obj", path + '/model.jpg')
+                if resp.status >= 300:
+                    logging.error("jpg file upload failed..")
+                resp = cls.obsClient.putFile(cls.bucket, s3_path + "/model.obj", path + '/model.mtl')
+                if resp.status >= 300:
+                    logging.error("mtl file upload failed..")
                 logging.info("Finished!")
 
             finally:
