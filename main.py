@@ -23,6 +23,7 @@ def make_app():
             (r"/", MainHandler),
             (r"/status", handler.StatusHandler),
             (r"/enqueue", handler.InQueueHandler),
+            (r"/ct_enqueue", handler.CTInQueueHandler),
         ],
         **settings
     )
